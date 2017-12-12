@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="script/jquery-3.2.1.min.js">
+    </script>
+</head>
+
+<body>
+    <canvas id="canvas" width="500" height="500"> </canvas>
+    <script>
+        
+        class Human {
+            /**
+             * Конструктор объекта
+             * @x integer координата по оси x
+             * @y integer координата по оси y
+             * @r double радиус человечка
+             * @color string цвет
+             */
+            constructor(x,y,r,color){ 
+                this.posX = x;
+                this.posY = y;
+                this.radius = r;
+                this.canvas = document.getElementById('canvas');
+                this.ctx = canvas.getContext('2d');
+                this.color = color;
+                this.speed = 2;
+                  
+                
+                this.drawFace();
+                this.drawPaces();
+                this.drawEyes();
+                this.drawGlases();
+                this.drawNouse();
+                this.drawMouse();
+                this.drawHat();
+               
+            }
+            
+            /**
+             * Отрисовка окружности
+             * @x integer координата по оси x
+             * @y integer координата по оси y
+             * @r double радиус окружности
+             * @isFilled boolian надо ли заполнить окружность
+             */
+            __drawCircle(x,y,r,isFilled){
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, r, 0, Math.PI * 2, false);
+                if(isFilled) {
+                    this.ctx.fillStyle = this.color;
+                    this.ctx.fill();
+                }else{
+                    this.ctx.strokeStyle = this.color;
+                    this.ctx.stroke();
+                }
+                this.ctx.closePath();	
+            }
+            
+            /**
+             * Отрисовка элипса
+             * @x integer координата по оси x
+             * @y integer координата по оси y
+             * @r double радиус окружности
+             * @isFilled boolian надо ли заполнить окружность
+             */            
+            __drawElipse(centerX, centerY, width, height, isFilled){
+	           this.ctx.beginPath();
+                this.ctx.moveTo(centerX, centerY - height/2);
+                this.ctx.bezierCurveTo(
+                    centerX + width/2, centerY - height/2, 
+                    centerX + width/2, centerY + height/2, 
+                    centerX, centerY + height/2
+                ); 
+                this.ctx.bezierCurveTo(
+                    centerX - width/2, centerY + height/2,
+                    centerX - width/2, centerY - height/2, 
+                    centerX, centerY - height/2
+                ); 
+                if(isFilled){
+                    this.ctx.fillStyle = this.color;
+                    this.ctx.fill();
+                }else{
+                    this.ctx.strokeStyle = this.color;
+                    this.ctx.stroke();
+                };
+                this.ctx.closePath();	
+            }
+            
+            /**
+             * Отрисовка линии
+             * @x1 integer координата по оси начальной точки 
+             * @x2 integer координата по оси конечной точки 
+             * @y1 integer координата по оси начальной точки 
+             * @y2 integer координата по оси конечной точки 
+             * @r double радиус окружности
+             * @isFilled boolian надо ли заполнить окружность
+             */   
+            __drawLine(x1,y1,x2,y2,width){
+                this.ctx.lineWidth = width; 
+                this.ctx.beginPath();
+                this.ctx.moveTo(x1,y1);
+                this.ctx.lineTo(x2,y2);
+                this.ctx.stroke();
+                this.ctx.closePath();
+            }
+            
+            /**
+             * Отрисовка половины окружности
+             * @x integer координата по оси x
+             * @y integer координата по оси y
+             * @r double радиус окружности
+             * @isFilled boolian надо ли заполнить окружность
+             */   
+            __drawHalfCircle(x,y,r){
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, r, 0, Math.PI, false);
+                this.ctx.stroke();
+                this.ctx.closePath();
+            }
+            
+            /**
+             * Отрисовка линии
+             * @x integer координата по оси начальной точки 
+             * @y integer координата по оси конечной точки 
+             * @h integer высота прямоугольника
+             * @w integer шырина прямоугольника
+             * @isFilled boolian надо ли заполнить окружность
+             */               
+            __drawRectangle(x,y,w,h){
+                this.ctx.fillRect(x,y,w,h); 
+            }
+            
+            
+            
+            drawFace(){
+                this.__drawCircle(this.posX, this.posY, this.radius, false);
+            }
+            drawPaces(){
+                var x1 = this.posX-this.radius;
+                var x2 = this.posX+this.radius;
+                var y = this.posY-this.radius*0.5;
+                var r = this.radius/10;
+                for(var i=0; i<10; i++){
+                    this.__drawCircle(x1, y+i*r*1.8, r-i/10, true);
+                    this.__drawCircle(x2, y+i*r*1.8, r-i/10, true);
+                }
+            }
+            drawEyes(){
+                var x1 = this.posX-this.radius/2;
+                var x2 = this.posX+this.radius/2;
+                var y = this.posY-this.radius/4;
+                var r = this.radius/10;
+                this.__drawElipse(x1, y, r*4, r*1.5, false);
+                this.__drawElipse(x2, y, r*4, r*1.5, false);
+            }
+            drawGlases(){
+                var x1 = this.posX-this.radius/2;
+                var x2 = this.posX+this.radius/2;
+                var y = this.posY-this.radius/4;
+                var r = this.radius/3.5;
+                this.__drawCircle(x1, y, r, false);
+                this.__drawCircle(x2, y, r, false);
+                
+                this.__drawLine(x1+r, y, x2-r, y, 2);
+                
+            }
+            drawNouse(){
+                this.__drawLine(
+                    this.posX, this.posY,
+                    this.posX+this.radius/4, this.posY+this.radius/5
+                );
+                this.__drawLine(
+                    this.posX+this.radius/4, this.posY+this.radius/5,
+                    this.posX, this.posY+this.radius/5
+                );
+            }
+            drawMouse(){
+                this.__drawHalfCircle(
+                    this.posX,
+                    this.posY+this.radius/4, 
+                    this.radius/2
+                );
+            }
+            drawHat(){
+                this.__drawElipse(
+                        this.posX, this.posY - this.radius*0.8, 
+                        this.radius*4, this.radius*0.5, 
+                        true
+                );
+                this.__drawRectangle(
+                    this.posX-this.radius/2, this.posY - this.radius*1.6,
+                    this.radius, this.radius
+                );
+            }
+            
+            moveRight(){
+                this.ctx.clearRect(0,0,500,500);
+                this.posX += this.speed;
+                this.drawFace();
+                this.drawPaces();
+                this.drawEyes();
+                this.drawGlases();
+                this.drawNouse();
+                this.drawMouse();
+                this.drawHat();
+              }
+            moveLeft(){
+                this.ctx.clearRect(0,0,500,500);
+                this.posX -= this.speed;
+                this.drawFace();
+                this.drawPaces();
+                this.drawEyes();
+                this.drawGlases();
+                this.drawNouse();
+                this.drawMouse();
+                this.drawHat();
+              }
+            moveUp(){
+                this.ctx.clearRect(0,0,500,500);
+                this.posY -= this.speed;
+                this.drawFace();
+                this.drawPaces();
+                this.drawEyes();
+                this.drawGlases();
+                this.drawNouse();
+                this.drawMouse();
+                this.drawHat();
+              }
+            moveDown(){
+                this.ctx.clearRect(0,0,500,500);
+                this.posY += this.speed;
+                this.drawFace();
+                this.drawPaces();
+                this.drawEyes();
+                this.drawGlases();
+                this.drawNouse();
+                this.drawMouse();
+                this.drawHat();
+              }
+          
+        }     
+                 
+ var Haim = new Human(200,300,60,'black'); 
+               
+        $('body').keydown(function(event){
+        if(event.keyCode==39){
+            Haim.moveRight(); 
+        } 
+        else if(event.keyCode==37){ 
+            Haim.moveLeft(); 
+        }
+        else if(event.keyCode==38){
+            Haim.moveUp();
+        }
+        else if(event.keyCode==40){
+            Haim.moveDown();
+        }
+        else {
+            console.log('Error');
+        }
+            });
+    </script>
+
+</body>
+
+</html>
